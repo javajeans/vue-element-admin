@@ -1,7 +1,9 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
-
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const HTMLWebpackPlugin = require('html-webpack-plugin');
+const { ModuleFederationPlugin } = require("webpack").container;
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
@@ -46,7 +48,16 @@ module.exports = {
       alias: {
         '@': resolve('src')
       }
-    }
+    },
+    plugins: [
+      new VueLoaderPlugin(),
+      new ModuleFederationPlugin({
+        name: "workflow",
+        remotes: {
+          app1: "workflow@http://localhost:9529/remoteEntry.js",
+        }
+      })
+    ]
   },
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload
